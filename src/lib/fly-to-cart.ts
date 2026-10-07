@@ -124,14 +124,26 @@ function gooeyAdded(btn: HTMLElement, reduce: boolean) {
       '<filter id="atc-goo-filter" x="-200%" y="-200%" width="500%" height="500%"><feGaussianBlur in="SourceGraphic" stdDeviation="6" result="b"/><feColorMatrix in="b" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -9"/></filter>';
     document.body.appendChild(svg);
   }
-  document.querySelectorAll(".atc-goo").forEach((n) => n.remove());
+  document.querySelectorAll(".atc-goo-wrap").forEach((n) => n.remove());
   const r = btn.getBoundingClientRect();
+  const pad = 110;
+  const W = r.width + pad * 2, H = r.height + pad * 2;
+  const rad = Math.min(parseFloat(getComputedStyle(btn).borderTopLeftRadius) || 0, r.height / 2, r.width / 2);
+  // Wrapper is masked with a button-shaped hole so dots pass BEHIND the button, like the example.
+  const wrap = document.createElement("span");
+  wrap.className = "atc-goo-wrap";
+  wrap.setAttribute("aria-hidden", "true");
+  Object.assign(wrap.style, { left: `${r.left - pad}px`, top: `${r.top - pad}px`, width: `${W}px`, height: `${H}px` });
+  const x = pad, y = pad, w = r.width, h = r.height, k = rad;
+  const hole = `M${x + k} ${y}H${x + w - k}A${k} ${k} 0 0 1 ${x + w} ${y + k}V${y + h - k}A${k} ${k} 0 0 1 ${x + w - k} ${y + h}H${x + k}A${k} ${k} 0 0 1 ${x} ${y + h - k}V${y + k}A${k} ${k} 0 0 1 ${x + k} ${y}Z`;
+  const svgMask = `<svg xmlns='http://www.w3.org/2000/svg' width='${W}' height='${H}'><path fill-rule='evenodd' d='M0 0H${W}V${H}H0Z ${hole}'/></svg>`;
+  const url = `url("data:image/svg+xml,${encodeURIComponent(svgMask)}")`;
+  wrap.style.setProperty("mask-image", url);
+  wrap.style.setProperty("-webkit-mask-image", url);
   const fx = document.createElement("span");
   fx.className = "atc-goo";
-  fx.setAttribute("aria-hidden", "true");
-  Object.assign(fx.style, { left: `${r.left}px`, top: `${r.top}px`, width: `${r.width}px`, height: `${r.height}px` });
-  fx.style.setProperty("--atc-r", getComputedStyle(btn).borderRadius);
-  document.body.appendChild(fx);
+  wrap.appendChild(fx);
+  document.body.appendChild(wrap);
   // Same params as the example: 15 particles, distance [90 -> 10], 600ms base, 300ms variance
   const count = 15, animationTime = 600, variance = 300, d = [90, 10], rr = 100;
   const colors = ["#e63946", "#ff4d6d", "#c1121f", "#ff6b6b", "#e63946"];
@@ -157,5 +169,5 @@ function gooeyAdded(btn: HTMLElement, reduce: boolean) {
     }, 30);
   }
   requestAnimationFrame(() => fx.classList.add("active"));
-  window.setTimeout(() => fx.remove(), 2000);
+  window.setTimeout(() => wrap.remove(), 2000);
 }
