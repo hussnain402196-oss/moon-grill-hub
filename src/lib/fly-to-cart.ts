@@ -130,6 +130,7 @@ function gooeyAdded(btn: HTMLElement, reduce: boolean) {
   fx.className = "atc-goo";
   fx.setAttribute("aria-hidden", "true");
   Object.assign(fx.style, { left: `${r.left}px`, top: `${r.top}px`, width: `${r.width}px`, height: `${r.height}px` });
+  fx.style.setProperty("--atc-r", getComputedStyle(btn).borderRadius);
   document.body.appendChild(fx);
   // Same params as the example: 15 particles, distance [90 -> 10], 600ms base, 300ms variance
   const count = 15, animationTime = 600, variance = 300, d = [90, 10], rr = 100;
