@@ -112,8 +112,8 @@ function gooeyAdded(btn: HTMLElement, reduce: boolean) {
   pill.setAttribute("aria-hidden", "true");
   pill.innerHTML = '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Added';
   btn.appendChild(pill);
-  window.setTimeout(() => pill.classList.add("out"), 2300);
-  window.setTimeout(() => pill.remove(), 2700);
+  window.setTimeout(() => pill.classList.add("out"), 1200);
+  window.setTimeout(() => pill.remove(), 1600);
   if (reduce) return;
 
   if (!document.getElementById("atc-goo-filter")) {
@@ -124,26 +124,37 @@ function gooeyAdded(btn: HTMLElement, reduce: boolean) {
       '<filter id="atc-goo-filter" x="-200%" y="-200%" width="500%" height="500%"><feGaussianBlur in="SourceGraphic" stdDeviation="6" result="b"/><feColorMatrix in="b" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -9"/></filter>';
     document.body.appendChild(svg);
   }
+  document.querySelectorAll(".atc-goo").forEach((n) => n.remove());
   const r = btn.getBoundingClientRect();
   const fx = document.createElement("span");
   fx.className = "atc-goo";
   fx.setAttribute("aria-hidden", "true");
   Object.assign(fx.style, { left: `${r.left}px`, top: `${r.top}px`, width: `${r.width}px`, height: `${r.height}px` });
   document.body.appendChild(fx);
-  const count = 15;
+  // Same params as the example: 15 particles, distance [90 -> 10], 600ms base, 300ms variance
+  const count = 15, animationTime = 600, variance = 300, d = [90, 10], rr = 100;
+  const colors = ["#e63946", "#ff4d6d", "#c1121f", "#ff6b6b", "#e63946"];
+  const xy = (dist: number, idx: number) => {
+    const a = (((360 + noise(8)) / count) * idx * Math.PI) / 180;
+    return [dist * Math.cos(a), dist * Math.sin(a)];
+  };
+  fx.style.setProperty("--time", `${animationTime * 2 + variance}ms`);
   for (let i = 0; i < count; i++) {
-    const a = ((360 + noise(8)) / count) * i * (Math.PI / 180);
-    const d0 = Math.max(r.width, r.height) / 2 + 28, d1 = 10 + noise(7);
-    const t = 1200 + noise(600);
-    fx.style.setProperty("--time", "1500ms");
-    const rot = noise(10);
-    const p = document.createElement("span");
-    p.className = "atc-particle";
-    p.style.cssText = `--sx:${d0 * Math.cos(a)}px;--sy:${d0 * Math.sin(a)}px;--ex:${d1 * Math.cos(a)}px;--ey:${d1 * Math.sin(a)}px;--time:${t}ms;--scale:${1 + noise(0.2)};--rotate:${(rot > 0 ? rot + 5 : rot - 5) * 10}deg`;
-    p.appendChild(document.createElement("i"));
-    fx.appendChild(p);
+    const t = animationTime * 2 + noise(variance * 2);
+    const [sx, sy] = xy(d[0], count - i);
+    const [ex, ey] = xy(d[1] + noise(7), count - i);
+    const rot = noise(rr / 10);
+    const rotate = rot > 0 ? (rot + rr / 20) * 10 : (rot - rr / 20) * 10;
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    window.setTimeout(() => {
+      const p = document.createElement("span");
+      p.className = "atc-particle";
+      p.style.cssText = `--sx:${sx}px;--sy:${sy}px;--ex:${ex}px;--ey:${ey}px;--time:${t}ms;--scale:${1 + noise(0.2)};--rotate:${rotate}deg;--pc:${color}`;
+      p.appendChild(document.createElement("i"));
+      fx.appendChild(p);
+      window.setTimeout(() => p.remove(), t);
+    }, 30);
   }
   requestAnimationFrame(() => fx.classList.add("active"));
-  window.setTimeout(() => fx.classList.add("out"), 2300);
-  window.setTimeout(() => fx.remove(), 2700);
+  window.setTimeout(() => fx.remove(), 2000);
 }
