@@ -153,27 +153,38 @@ function gooeyAdded(btn: HTMLElement, reduce: boolean) {
   const count = 15, animationTime = 600, variance = 300, d = [90, 10], rr = 100;
   const palette = getComputedStyle(document.documentElement);
   const colors = ["--atc-red", "--atc-pink", "--atc-deep-red", "--atc-coral", "--atc-red"].map((token) => palette.getPropertyValue(token).trim());
-  const xy = (dist: number, idx: number) => {
-    const a = (((360 + noise(8)) / count) * idx * Math.PI) / 180;
-    return [dist * Math.cos(a), dist * Math.sin(a)];
+  // Copy the reference generator exactly: X and Y each get their own noise.
+  const getXY = (distance: number, pointIndex: number, totalPoints: number) => {
+    const x = distance * Math.cos(((360 + noise(8)) / totalPoints * pointIndex) * Math.PI / 180);
+    const y = distance * Math.sin(((360 + noise(8)) / totalPoints * pointIndex) * Math.PI / 180);
+    return [x, y];
+  };
+  const createParticle = (i: number, t: number) => {
+    const rotate = noise(rr / 10);
+    return {
+      start: getXY(d[0], count - i, count),
+      end: getXY(d[1] + noise(7), count - i, count),
+      time: t,
+      scale: 1 + noise(0.2),
+      color: colors[Math.floor(Math.random() * colors.length)],
+      rotate: rotate > 0 ? (rotate + rr / 20) * 10 : (rotate - rr / 20) * 10,
+    };
   };
   fx.style.setProperty("--time", `${animationTime * 2 + variance}ms`);
   for (let i = 0; i < count; i++) {
     const t = animationTime * 2 + noise(variance * 2);
-    const [sx, sy] = xy(d[0], count - i);
-    const [ex, ey] = xy(d[1] + noise(7), count - i);
-    const rot = noise(rr / 10);
-    const rotate = rot > 0 ? (rot + rr / 20) * 10 : (rot - rr / 20) * 10;
-    const color = colors[Math.floor(Math.random() * colors.length)];
+    const particle = createParticle(i, t);
     window.setTimeout(() => {
       const p = document.createElement("span");
       p.className = "atc-particle";
-      p.style.cssText = `--sx:${sx}px;--sy:${sy}px;--ex:${ex}px;--ey:${ey}px;--time:${t}ms;--scale:${1 + noise(0.2)};--rotate:${rotate}deg;--pc:${color}`;
-      p.appendChild(document.createElement("i"));
+      p.style.cssText = `--sx:${particle.start[0]}px;--sy:${particle.start[1]}px;--ex:${particle.end[0]}px;--ey:${particle.end[1]}px;--time:${particle.time}ms;--scale:${particle.scale};--rotate:${particle.rotate}deg;--pc:${particle.color}`;
+      const point = document.createElement("span");
+      point.className = "atc-point";
+      p.appendChild(point);
       fx.appendChild(p);
+      requestAnimationFrame(() => fx.classList.add("active"));
       window.setTimeout(() => p.remove(), t);
     }, 30);
   }
-  requestAnimationFrame(() => fx.classList.add("active"));
   window.setTimeout(() => wrap.remove(), 2000);
 }
