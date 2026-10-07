@@ -121,7 +121,7 @@ function gooeyAdded(btn: HTMLElement, reduce: boolean) {
     svg.setAttribute("aria-hidden", "true");
     svg.style.cssText = "position:absolute;width:0;height:0";
     svg.innerHTML =
-      '<filter id="atc-goo-filter" x="-200%" y="-200%" width="500%" height="500%"><feGaussianBlur in="SourceGraphic" stdDeviation="6" result="b"/><feColorMatrix in="b" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -9"/></filter>';
+      '<filter id="atc-goo-filter" color-interpolation-filters="sRGB" x="-200%" y="-200%" width="500%" height="500%"><feGaussianBlur in="SourceGraphic" stdDeviation="7" result="b"/><feColorMatrix in="b" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -9"/></filter>';
     document.body.appendChild(svg);
   }
   document.querySelectorAll(".atc-goo-wrap").forEach((n) => n.remove());
@@ -142,11 +142,17 @@ function gooeyAdded(btn: HTMLElement, reduce: boolean) {
   wrap.style.setProperty("-webkit-mask-image", url);
   const fx = document.createElement("span");
   fx.className = "atc-goo";
+  // Include the example's pill INSIDE the filter so nearby dots join its edge.
+  // The outer mask is applied afterwards, keeping the actual button untouched.
+  fx.style.setProperty("--atc-button-width", `${r.width}px`);
+  fx.style.setProperty("--atc-button-height", `${r.height}px`);
+  fx.style.setProperty("--atc-button-radius", `${rad}px`);
   wrap.appendChild(fx);
   document.body.appendChild(wrap);
   // Same params as the example: 15 particles, distance [90 -> 10], 600ms base, 300ms variance
   const count = 15, animationTime = 600, variance = 300, d = [90, 10], rr = 100;
-  const colors = ["#e63946", "#ff4d6d", "#c1121f", "#ff6b6b", "#e63946"];
+  const palette = getComputedStyle(document.documentElement);
+  const colors = ["--atc-red", "--atc-pink", "--atc-deep-red", "--atc-coral", "--atc-red"].map((token) => palette.getPropertyValue(token).trim());
   const xy = (dist: number, idx: number) => {
     const a = (((360 + noise(8)) / count) * idx * Math.PI) / 180;
     return [dist * Math.cos(a), dist * Math.sin(a)];
