@@ -4461,13 +4461,13 @@ img { image-rendering: auto; }
 .atc-goo::after{content:"";position:absolute;inset:0;background:var(--color-flame);scale:0;opacity:0;z-index:-1;border-radius:100vw;}
 .atc-goo::after{display:none;}
 .atc-goo.out{opacity:0;}
-.atc-particle{position:absolute;top:calc(50% - 8px);left:calc(50% - 8px);width:20px;height:20px;border-radius:100%;opacity:0;animation:atc-particle var(--time) ease 1 -350ms;}
-.atc-particle i{display:block;width:100%;height:100%;border-radius:100%;background:var(--atc-biscuit);opacity:1;animation:atc-point var(--time) ease 1 -350ms;}
+.atc-particle{position:absolute;top:calc(50% - 8px);left:calc(50% - 8px);width:18px;height:18px;border-radius:100%;opacity:0;animation:atc-particle var(--time) ease 1 -350ms;}
+.atc-particle i{display:block;width:100%;height:100%;border-radius:100%;background:var(--pc,var(--atc-biscuit));opacity:1;animation:atc-point var(--time) ease 1 -350ms;}
 @keyframes atc-particle{0%{transform:rotate(0deg) translate(var(--sx),var(--sy));opacity:1;animation-timing-function:cubic-bezier(.55,0,1,.45)}70%{transform:rotate(calc(var(--rotate)*.5)) translate(calc(var(--ex)*1.2),calc(var(--ey)*1.2));opacity:1;animation-timing-function:ease}85%{transform:rotate(calc(var(--rotate)*.66)) translate(var(--ex),var(--ey));opacity:1}100%{transform:rotate(calc(var(--rotate)*1.2)) translate(calc(var(--ex)*.5),calc(var(--ey)*.5));opacity:1}}
 @keyframes atc-point{0%{scale:0;opacity:0;animation-timing-function:cubic-bezier(.55,0,1,.45)}25%{scale:calc(var(--scale)*.25)}38%{opacity:1}65%{scale:var(--scale);opacity:1;animation-timing-function:ease}85%{scale:var(--scale);opacity:1}100%{scale:0;opacity:0}}
 @keyframes atc-pill{to{scale:1;opacity:1}}
 .atc-added{position:absolute;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;gap:.35em;border-radius:inherit;color:var(--color-cream);font-weight:800;text-transform:uppercase;letter-spacing:.08em;pointer-events:none;isolation:isolate;transition:opacity .4s ease;}
-.atc-added::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:100vw;background:var(--color-flame);opacity:0;scale:0;animation:atc-pill 2s var(--atc-ease) .2s both;}
+.atc-added::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;background:#c1121f;opacity:0;scale:0;animation:atc-pill 2s var(--atc-ease) .2s both;}
 .atc-added.out{opacity:0;}
 .atc-added svg{width:1.1em;height:1.1em;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:24;stroke-dashoffset:24;animation:atc-tick .45s ease .5s forwards;}
 @keyframes atc-tick{to{stroke-dashoffset:0}}
